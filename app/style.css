@@ -13,3 +13,35 @@ p{
 .ml8{
   margin-left: 8px !important;
 }
+
+.ReactCrop__image{
+  width: 100vw;
+  height: 100vh;
+}
+
+.ReactCrop{
+  position: absolute !important;
+  width: 100vw;
+  height: 100vh;
+}
+
+.full-width{
+  width: 100% !important;
+}
+
+.full-height{
+  height: 100% !important;
+}
+
+.block{
+  cursor: pointer;
+    position: absolute;
+    
+    background-color: blue;
+    border-radius: 4px;
+    border: "1px solid transparent";
+}
+
+.selectedBlock{
+  border: "1px solid red" !important;
+}

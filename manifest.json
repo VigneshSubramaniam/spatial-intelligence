@@ -4,7 +4,7 @@
     "freshservice": {
       "location": {
         "ticket_sidebar": {
-          "url": "template.html",
+          "url": "./space-intelligence/build/index.html",
           "icon": "icon.svg"
         }
       }
