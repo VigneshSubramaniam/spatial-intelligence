@@ -1,0 +1,12 @@
+.ReactCrop__image{
+    width: 100vw;
+    /* height: 100vh; */
+}
+
+.ReactCrop{
+    position: absolute !important;
+    width: 100vw;
+    height: 100vh;
+    overflow: scroll;
+    left: 0;
+}
