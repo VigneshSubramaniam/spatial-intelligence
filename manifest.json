@@ -13,7 +13,7 @@
         },
         "ticket_top_navigation": {
           "url": "hawk_eye.html",
-          "icon": "icon.svg"
+          "icon": "eye.svg"
         }
       }
     }
