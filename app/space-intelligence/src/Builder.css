@@ -12,6 +12,10 @@
     left: 0;
 }
 
+.modal-body{
+    padding: 0px !important;
+}
+
 .pos-rel{
     position: relative;
     height:auto;

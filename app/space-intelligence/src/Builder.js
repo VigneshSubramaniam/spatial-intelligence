@@ -33,10 +33,10 @@ class Builder extends Component {
             client.db.get('asset_mappings').then(function(data){
                 if(Object.keys(data['0']).indexOf(context.data.assetId.toString()) > -1)
                 this.setState({blocks : [data['0'][context.data.assetId]]})
-                if(context.data.page !== "ticket"){
-                    this.setState({allowEdit: true})
-                }
             }.bind(this))
+        }
+        if(context && context.data && context.data.page !== "ticket"){
+            this.setState({allowEdit: true})
         }
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
     }
@@ -120,7 +120,7 @@ class Builder extends Component {
                     //     hideDelay={200}
                     //     title="Space troopers"
                     // >
-                    <Block item={item} isSelected={idx == this.state.selectedBlock} onClick={() => {
+                    <Block item={item} isSelected={idx == this.state.selectedBlock} color={item.color} onClick={() => {
                         this.setState({ selectedBlock: idx })
                         this.viewAssetDetails(idx);
                     }}></Block>
@@ -194,9 +194,16 @@ class Builder extends Component {
         const {allAssets} = this.state;
         return(
             <Overlay>
+                <AssetTypes noHover>
+                    <AssetName>Asset Name</AssetName>
+                    <AssetName>Asset Type</AssetName>
+                </AssetTypes>
                 {allAssets.map(item => {
                     return(
-                        <Asset onClick={() => {this.mapcurrentAsset(item)}}>{item.name}</Asset>
+                        <AssetTypes onClick={() => {this.mapcurrentAsset(item)}}>
+                            <Asset>{item.name}</Asset>
+                            <Asset>{item.author_type}</Asset>
+                        </AssetTypes>
                     )
                 })}
             </Overlay>
@@ -218,37 +225,71 @@ class Builder extends Component {
                 </ReactCrop>
                 {showAssetDetails && this.showAssetDetails()}
                 {showAllAssets && this.showAllAssets()}
-                {allowEdit && <Button onClick={() => this.saveMappings()}>Finish</Button>}
+                {allowEdit && <Button onClick={() => this.saveMappings()}>Publish</Button>}
             </div>
         )
     }
 }
 
 const Overlay = styled.div`
+    margin: 8px;
+    width: calc(100vw - 18px);
     background: #FFF;
-    height: 400px;
-    width: 100vw;
+    box-shadow: 0 2px 18px 0 rgba(18,52,77,0.16);
+    border: 1px solid #EBEEF0;
+    height: 300px;
+    overflow: scroll;
     position: absolute;
     bottom: 0;
+    border-radius: 4px;
 `
 
 const Asset = styled.div`
+    width: 50%;
     padding: 12px 17px;
     line-height: 20px;
-    color: black;
+    color: #12344D;
     border-top: 1px solid #EBEEF0;
+    font-size: 14px;
+    font-weight: 500;
 `
+
+const AssetName = styled.div`
+    width: 50%;
+    padding: 12px 17px;
+    line-height: 20px;
+    color: #12344D;
+    opacity: 0.6;
+    border-top: 1px solid #EBEEF0;
+    font-size: 13px;	
+    font-weight: 600;	
+    background: #F5f7f9;
+`
+
 const AssetDetail = styled.div`
 
+`
+
+const AssetTypes = styled.div`
+    cursor: pointer;
+    display: flex;
+    align-items:center;
+    background-color: #FFF;
+    border-radius: 4px;
+    ${props => !props.noHover && `
+        &:hover{
+            background-color: #EBEFF3;
+        }
+    `}
 `
 
 const Block = styled.div`
     cursor: pointer;
     position: absolute;
     transform: ${props => `translate3d(${props.item.x}px,${props.item.y}px,0)`};
-    background-color: blue;
+    background-color: ${props => props.color ? props.color : "#90C6FE"};
     border-radius: 2px;
-    border: ${props => props.isSelected ? "1px solid red" : "1px solid transparent"};
+    border: ${props => props.isSelected ? "2px solid #2C5CC5" : "2px solid transparent"};
     width: ${props => props.item.width}px;
     height: ${props => props.item.height}px;
 `
@@ -256,8 +297,8 @@ const Block = styled.div`
 const Button = styled.button`
     z-index:1;
     position:absolute;
-    top: 20px;
-    left: 20px;
+    top: 8px;
+    right: 8px;
     padding: 8px 16px;
     border-radius: 4px;
     border: 1px solid #dadfe3;
@@ -265,6 +306,7 @@ const Button = styled.button`
     background-color: #009A79;
     cursor:pointer;
     color: #FFF;
+    font-weight: 600;
     &:hover{
         border: 1px solid green;
     }
