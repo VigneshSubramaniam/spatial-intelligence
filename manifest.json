@@ -6,6 +6,10 @@
         "ticket_sidebar": {
           "url": "template.html",
           "icon": "icon.svg"
+        },
+        "asset_sidebar": {
+          "url": "asset.html",
+          "icon": "icon.svg"
         }
       }
     }

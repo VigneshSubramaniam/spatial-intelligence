@@ -1,13 +1,22 @@
 document.addEventListener('DOMContentLoaded',function() {
     var ticketAssets = [];
+    var ticketId;
     window.app.initialized()
         .then(function(_client) {
             var assetsListEl = document.getElementById("assosiated_assets");
             var client = _client;
-            client.data.get("ticketAssets").then(
-                function(data) {
-                    ticketAssets = data.ticketAssets;
-                    appendChild(ticketAssets);
+            client.data.get("ticket").then(
+                function(res) {
+                    ticketId = res.ticket.display_id
+                    client.data.get("ticketAssets").then(
+                        function(data) {
+                            ticketAssets = data.ticketAssets;
+                            appendChild(ticketAssets);
+                        },
+                        function(error) {
+                            // failure operation
+                        }
+                    );
                 },
                 function(error) {
                     // failure operation
@@ -15,7 +24,7 @@ document.addEventListener('DOMContentLoaded',function() {
             );
             
             client.events.on("ticket.assetAssociated", (data) => {
-                client.request.get("https://space.freshservice.com/api/v2/tickets/4?include=assets", {
+                client.request.get(`https://space.freshservice.com/api/v2/tickets/${ticketId}?include=assets`, {
                     headers: {
                         Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
                         "Content-Type": "application/json;charset=utf-8"
@@ -42,7 +51,7 @@ document.addEventListener('DOMContentLoaded',function() {
 
             function appendChild(ticketAssets) { 
                 ticketAssets.forEach(asset => {
-                    let $element = $(`<li class="assets-list"><img class="location" src="https://toppng.com/uploads/preview/map-point-google-map-marker-gif-11562858751s4qufnxuml.png"/>${asset.name}</li>`);
+                    let $element = $(`<li class="assets-list"><img class="locate" src="./locate.svg"/>${asset.name}</li>`);
                     $element.attr('id', asset.id);
                     $element.on( "click", {asset: asset}, openModal)
                     $('#assosiated_assets').append($element);
