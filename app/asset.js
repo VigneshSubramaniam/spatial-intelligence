@@ -15,9 +15,8 @@ document.addEventListener('DOMContentLoaded',function() {
             );
 
             function openModal(event) {
-                console.log(event.data)
                 client.interface.trigger("showModal", {
-                    title: "Sample Modal",
+                    title: "Spaces",
                     template: "./space-intelligence/build/index.html",
                     data: {assetId: event.data.asset.display_id, page:'asset'}
                 }).then(function(data) {

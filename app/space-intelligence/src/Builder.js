@@ -59,13 +59,11 @@ class Builder extends Component {
                     for(var prop in data){
                         allBlocks.push(data[prop])
                     }
-                    console.log('allblocks:: ',allBlocks);
                     this.setState({blocks : allBlocks})
                 }
                 else if(data && Object.keys(data).indexOf(context.data.assetId.toString()) > -1){
                     this.setState({blocks : [data[context.data.assetId]]})
                 }
-                console.log('alldata:: ',data);
                 
             }.bind(this))
         }
@@ -110,11 +108,9 @@ class Builder extends Component {
     }
 
     onImageLoaded = image => {
-        console.log('onCropComplete', image)
     }
 
     onCropComplete = crop => {
-        console.log('onCropComplete', crop)
     }
 
     onCropChange = crop => {
@@ -207,10 +203,8 @@ class Builder extends Component {
                 map[blocks[i].associations.display_id] = blocks[i];
             }
         }
-        console.log(map);
         if(Object.keys(map).length){
             client.db.set("asset_mappings", map).then(function (data) {
-                console.log('on save', data);
                 client.interface.trigger("showNotify", {
                     type: "success",
                     message: "Pulished successfully"
@@ -224,7 +218,6 @@ class Builder extends Component {
         }
         else{
             client.db.delete("asset_mappings").then(function (data) {
-                console.log('on save', data);
                 client.interface.trigger("showNotify", {
                     type: "success",
                     message: "All asset mappings removed successfully"
@@ -283,7 +276,6 @@ class Builder extends Component {
             }
         })
             .then(function (res) {
-                console.log("All Tickets");
                 let allTickets = JSON.parse(res.response);
                 let allTicketsWithAssets = [] 
                 let count = 0;
@@ -322,7 +314,6 @@ class Builder extends Component {
             }
         })
             .then(function (res) {
-                console.log(JSON.parse(res.response));
                 this.setState({ allAssets: JSON.parse(res.response), showAllAssets: true })
             }.bind(this))
             .catch(function (error) {
@@ -357,13 +348,11 @@ class Builder extends Component {
             for(var prop in item.asset) {
                 arr.push(item.asset[prop].id)
             }
-            console.log(arr);
             return{
                 ...el,
                 color: arr.indexOf(el.associations.display_id) > -1 ? "green" : ""
             }
         });
-        console.log(modifiedBlocks);
         this.setState({blocks: modifiedBlocks});
     }
 
@@ -392,7 +381,6 @@ class Builder extends Component {
 
     showAllTickets = () => {
         const {allTickets} = this.state;
-        console.log("showAllTickets", allTickets)
         return(
             <Overlay>
                 <AssetTypes noHover>

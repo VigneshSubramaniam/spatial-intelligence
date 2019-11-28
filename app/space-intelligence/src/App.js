@@ -17,7 +17,6 @@ class App extends React.Component{
     
   }
   initialiseApp = () => {
-    console.log('componentLoaded',window.app)
     window.app.initialized()
         .then((_client) => {
           let client = _client;
@@ -25,9 +24,7 @@ class App extends React.Component{
           client.instance.context()
             .then((context) => {
               this.setState({context: context, clientLoaded: true})
-              console.log(context)
             }).catch(function(error) {
-              console.log(error)
             });
         })
   }

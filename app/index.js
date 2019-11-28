@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded',function() {
                         function(data) {
                             ticketAssets = data.ticketAssets;
                             appendChild(ticketAssets);
-                            console.log(`ticket${ticketId}index`,ticketAssets);
                             client.db.set(`ticket${ticketId}`, ticketAssets).then(function (data) {})
                         },
                         function(error) {
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded',function() {
                 }).then(function (res) {
                         let data = JSON.parse(res.response);
                         ticketAssets = data.ticket.assets;
-                        console.log(`ticket${ticketId}index`,ticketAssets);
                         client.db.set(`ticket${ticketId}`, ticketAssets).then(function (data) {})
                         deleteChild(assetsListEl, "ul");
                         appendChild(ticketAssets);
@@ -45,7 +43,7 @@ document.addEventListener('DOMContentLoaded',function() {
 
             function openModal(event) {
                 client.interface.trigger("showModal", {
-                    title: "Sample Modal",
+                    title: "Spaces",
                     template: "./space-intelligence/build/index.html",
                     data: {assetId: event.data.asset.id, page:'ticket'}
                 }).then(function(data) {
