@@ -49,3 +49,21 @@ p{
 .pointer{
   cursor: pointer;
 }
+
+.assets-list {
+  padding: 5px;
+  color: #5071DA;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+#assosiated_assets {
+  list-style: none;
+  margin: 10px;
+}
+
+.location {
+  width: 12px;
+  margin-right: 10px;
+}

@@ -1,20 +1,56 @@
 document.addEventListener('DOMContentLoaded',function() {
-    document.getElementById("openModal").addEventListener('click', function() {
-        window.app.initialized()
+    var ticketAssets = [];
+    window.app.initialized()
         .then(function(_client) {
-            console.log('inside client', _client)
+            var assetsListEl = document.getElementById("assosiated_assets");
             var client = _client;
-            client.interface.trigger("showModal", {
-            title: "Sample Modal",
-            template: "./space-intelligence/build/index.html",
-            data: {ticketId: 4}
-            }).then(function(data) {
-                console.log("Kanna", data)
-            }).catch(function(error) {
-                console.log(error);
+            client.data.get("ticketAssets").then(
+                function(data) {
+                    ticketAssets = data.ticketAssets;
+                    appendChild(ticketAssets);
+                },
+                function(error) {
+                    // failure operation
+                }
+            );
+            
+            client.events.on("ticket.assetAssociated", (data) => {
+                client.request.get("https://space.freshservice.com/api/v2/tickets/4?include=assets", {
+                    headers: {
+                        Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
+                        "Content-Type": "application/json;charset=utf-8"
+                    }
+                }).then(function (res) {
+                        let data = JSON.parse(res.response);
+                        ticketAssets = data.ticket.assets;
+                        deleteChild(assetsListEl, "ul");
+                        appendChild(ticketAssets);
+                }).catch(function (error) {
+                    console.error(error);
+                });
             });
-        }).catch(function(error) {
-        console.log(error);
+
+            function openModal(event) {
+                client.interface.trigger("showModal", {
+                    title: "Sample Modal",
+                    template: "./space-intelligence/build/index.html",
+                    data: {assetId: event.data.asset.id}
+                }).then(function(data) {
+                }).catch(function(error) {
+                });
+            }
+
+            function appendChild(ticketAssets) { 
+                ticketAssets.forEach(asset => {
+                    let $element = $(`<li class="assets-list"><img class="location" src="https://toppng.com/uploads/preview/map-point-google-map-marker-gif-11562858751s4qufnxuml.png"/>${asset.name}</li>`);
+                    $element.attr('id', asset.id);
+                    $element.on( "click", {asset: asset}, openModal)
+                    $('#assosiated_assets').append($element);
+                }); 
+            } 
+
+            function deleteChild() { 
+                $("#assosiated_assets").empty();
+            } 
         })
-    });
 });
