@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded',function() {
             );
             
             client.events.on("ticket.assetAssociated", (data) => {
-                client.request.get(`https://space.freshservice.com/api/v2/tickets/${ticketId}?include=assets`, {
+                client.request.get(`https://<%=iparam.freshservice_subdomain%>.freshservice.com/api/v2/tickets/${ticketId}?include=assets`, {
                     headers: {
-                        Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
+                        Authorization: "Basic <%= encode(iparam.freshservice_api_key)%>",
                         "Content-Type": "application/json;charset=utf-8"
                     }
                 }).then(function (res) {

@@ -269,9 +269,9 @@ class Builder extends Component {
     getAllTickets = () => {
         const { client } = this.props.params;
         
-        client.request.get("https://space.freshservice.com/helpdesk/tickets/filter/all_tickets?format=json&page=1", {
+        client.request.get("https://<%=iparam.freshservice_subdomain%>.freshservice.com/helpdesk/tickets/filter/all_tickets?format=json&page=1", {
             headers: {
-                Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
+                Authorization: "Basic <%= encode(iparam.freshservice_api_key)%>",
                 "Content-Type": "application/json;charset=utf-8"
             }
         })
@@ -306,10 +306,9 @@ class Builder extends Component {
     mapAssetDetails = () => {
         const { client } = this.props.params;
         
-        //client.request.get("https://space.freshservice.com/api/v2/assets", {
-            client.request.get("https://space.freshservice.com/cmdb/items.json", {
+            client.request.get("https://<%=iparam.freshservice_subdomain%>.freshservice.com/cmdb/items.json", {
                 headers: {
-                    Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
+                    Authorization: "Basic <%= encode(iparam.freshservice_api_key)%>",
                     "Content-Type": "application/json;charset=utf-8"
                 }
             })
