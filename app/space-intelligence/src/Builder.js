@@ -20,10 +20,10 @@ class Builder extends Component {
             },
             selectedBlock: null,
             blocks: [],
-            overlayVisible: false,
             showAllAssets: false,
             showAssetDetails: false,
-            allAssets:[]
+            allAssets:[],
+            allowEdit: false
         }
     }
 
@@ -33,6 +33,9 @@ class Builder extends Component {
             client.db.get('asset_mappings').then(function(data){
                 if(Object.keys(data['0']).indexOf(context.data.assetId.toString()) > -1)
                 this.setState({blocks : [data['0'][context.data.assetId]]})
+                if(context.data.page !== "ticket"){
+                    this.setState({allowEdit: true})
+                }
             }.bind(this))
         }
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
@@ -78,7 +81,9 @@ class Builder extends Component {
     }
 
     onCropChange = crop => {
-        this.setState({ crop })
+        if(this.state.allowEdit){
+            this.setState({ crop })
+        }
     }
 
     createBlock = () => {
@@ -199,7 +204,7 @@ class Builder extends Component {
     }
 
     render() {
-        const {showAssetDetails, showAllAssets} = this.state;
+        const {showAssetDetails, showAllAssets, allowEdit} = this.state;
         return (
             <div>
                 <ReactCrop
@@ -213,7 +218,7 @@ class Builder extends Component {
                 </ReactCrop>
                 {showAssetDetails && this.showAssetDetails()}
                 {showAllAssets && this.showAllAssets()}
-                <Button onClick={() => this.saveMappings()}>Finish</Button>
+                {allowEdit && <Button onClick={() => this.saveMappings()}>Finish</Button>}
             </div>
         )
     }
