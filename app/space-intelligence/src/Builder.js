@@ -31,8 +31,19 @@ class Builder extends Component {
         const {context, client} = this.props.params;
         if(client && client.db){
             client.db.get('asset_mappings').then(function(data){
-                if(Object.keys(data['0']).indexOf(context.data.assetId.toString()) > -1)
-                this.setState({blocks : [data['0'][context.data.assetId]]})
+                if(data && context.data.page == "asset"){
+                    let allBlocks = [];
+                    for(var prop in data){
+                        allBlocks.push(data[prop])
+                    }
+                    console.log('allblocks:: ',allBlocks);
+                    this.setState({blocks : allBlocks})
+                }
+                else if(data && Object.keys(data).indexOf(context.data.assetId.toString()) > -1){
+                    this.setState({blocks : [data[context.data.assetId]]})
+                }
+                console.log('alldata:: ',data);
+                
             }.bind(this))
         }
         if(context && context.data && context.data.page !== "ticket"){
@@ -134,13 +145,36 @@ class Builder extends Component {
         const {blocks} = this.state;
         const {client} = this.props.params;
         let filteredBlocks = blocks.filter(item => item.associations).map(item => {
+            
             return{
                 [item.associations.display_id]: item
             }
         })
-        client.db.set( "asset_mappings", filteredBlocks).then(function(data){
-            console.log(data);
+        let map = {};
+        for(let i=0;i<blocks.length;i++){
+            if(blocks[i].associations){
+                map[blocks[i].associations.display_id] = blocks[i];
+            }
+        }
+        console.log(map);
+        client.db.set("asset_mappings", map).then(function (data) {
+            console.log('on save', data);
         })
+        
+        // client.db.get( "asset_mappings").then(function(data){
+        //     console.log(data);
+        //     let map = filteredBlocks[0];
+        //     var allMappings = {
+        //         0: {
+        //             ...data['0'],
+        //             map
+        //         }
+        //     }
+        //     client.db.set( "asset_mappings", allMappings).then(function(data){
+        //         console.log(data);
+        //     })
+        // })
+       
     }
 
     showAssetDetails = () => {
@@ -154,7 +188,7 @@ class Builder extends Component {
 
     mapAssetDetails = () => {
         const { client } = this.props.params;
-        console.log(this.props.params);
+        
         client.request.get("https://space.freshservice.com/api/v2/assets", {
             headers: {
                 Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
