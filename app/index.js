@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded',function() {
                 client.interface.trigger("showModal", {
                     title: "Sample Modal",
                     template: "./space-intelligence/build/index.html",
-                    data: {assetId: event.data.asset.id}
+                    data: {assetId: event.data.asset.id, page:'ticket'}
                 }).then(function(data) {
                 }).catch(function(error) {
                 });
