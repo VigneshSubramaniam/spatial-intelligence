@@ -188,15 +188,16 @@ class Builder extends Component {
     mapAssetDetails = () => {
         const { client } = this.props.params;
         
-        client.request.get("https://space.freshservice.com/api/assets", {
+        //client.request.get("https://space.freshservice.com/api/v2/assets", {
+        client.request.get("https://space.freshservice.com/cmdb/items.json", {
             headers: {
                 Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
                 "Content-Type": "application/json;charset=utf-8"
             }
         })
             .then(function (res) {
-                console.log(JSON.parse(res.response).assets);
-                this.setState({ allAssets: JSON.parse(res.response).assets, showAllAssets: true })
+                console.log(JSON.parse(res.response));
+                this.setState({ allAssets: JSON.parse(res.response), showAllAssets: true })
             }.bind(this))
             .catch(function (error) {
                 console.error(error);
@@ -230,12 +231,15 @@ class Builder extends Component {
                 <AssetTypes noHover>
                     <AssetName>Asset Name</AssetName>
                     <AssetName>Asset Type</AssetName>
+                    <AssetName>Business Impact</AssetName>
                 </AssetTypes>
                 {allAssets.map(item => {
                     return(
                         <AssetTypes onClick={() => {this.mapcurrentAsset(item)}}>
                             <Asset>{item.name}</Asset>
-                            <Asset>{item.author_type}</Asset>
+                            <Asset>{item.ci_type_name}</Asset>
+                            <Asset>{item.business_impact}</Asset>
+                            {/* <Asset>{item.author_type}</Asset> */}
                         </AssetTypes>
                     )
                 })}
@@ -278,7 +282,7 @@ const Overlay = styled.div`
 `
 
 const Asset = styled.div`
-    width: 50%;
+    width: 33.33%;
     padding: 12px 17px;
     line-height: 20px;
     color: #12344D;
