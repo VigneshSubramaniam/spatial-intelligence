@@ -33,3 +33,39 @@
   text-align: left;
   padding: 12px;
 }
+
+.flex{
+    display: flex;
+}
+
+.col{
+    flex-direction: column;
+}
+
+.row{
+    flex-direction: row
+}
+
+.center{
+    align-items: center;
+}
+
+.start{
+    align-items: flex-start;
+}
+
+.mt8{
+    margin-top:8px !important;
+}
+
+.mt26{
+    margin-top:26px !important;
+}
+
+.full-width{
+    width: 100% !important;
+}
+
+.half-width {
+    width: 50% !important;
+}

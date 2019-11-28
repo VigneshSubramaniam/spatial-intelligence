@@ -174,15 +174,35 @@ class Builder extends Component {
 
     showAssetDetails = () => {
         const {selectedBlock, blocks, showAssetDetails} = this.state
-        if(showAssetDetails && blocks[selectedBlock] && blocks[selectedBlock].associations){
-            return(
-                <Overlay>
-                    <AssetDetail>{blocks[selectedBlock].associations.name}</AssetDetail>
-                </Overlay>
+        if (showAssetDetails && blocks[selectedBlock] && blocks[selectedBlock].associations) {
+            let field = blocks[selectedBlock].associations;
+            return (
+                <OverlayAssetDetail>
+                    <AssetTitle>{field.name}</AssetTitle>
+                    <div className="flex row center mt8">
+                        <Subsection>{field.ci_type_name}</Subsection>
+                        <Splitter></Splitter>
+                        <Subsection>Business Impact : {field.business_impact}</Subsection>
+                    </div>
+                    <div className="flex col start mt26 half-width">
+                        <div className="flex row start full-width">
+                            <Field className="half-width">Name</Field>
+                            <SubField>{field.name}</SubField>
+                        </div>
+                        <div className="flex row start mt8 full-width">
+                            <Field className="half-width">Type</Field>
+                            <SubField>{field.ci_type_name}</SubField>
+                        </div>
+                        <div className="flex row start mt8 full-width">
+                            <Field className="half-width">Impact</Field>
+                            <SubField>{field.business_impact}</SubField>
+                        </div>
+                    </div>
+                </OverlayAssetDetail>
             )
         }
         else return ''
-        
+
     }
 
     mapAssetDetails = () => {
@@ -268,6 +288,56 @@ class Builder extends Component {
     }
 }
 
+const OverlayAssetDetail = styled.div`
+    margin: 8px;
+    width: calc(100vw - 38px);
+    padding-left: 20px;
+    background: #FFF;
+    box-shadow: 0 2px 18px 0 rgba(18,52,77,0.16);
+    border: 1px solid #EBEEF0;
+    height: 200px;
+    overflow: scroll;
+    position: absolute;
+    bottom: 0;
+    border-radius: 4px;
+`
+
+const Subsection = styled.div`
+    opacity: 0.6;	
+    color: #12344D;	
+    font-size: 14px;	
+    line-height: 16px;	
+    text-align: center;
+
+`
+const Splitter = styled.div`
+    width: 1px;
+    opacity: 0.6;	
+    color: #12344D;	
+    font-size: 14px;	
+    line-height: 16px;	
+    text-align: center;
+    border-left: 1px solid #12344D;
+    height: 16px;
+    margin-left: 8px;
+    margin-right: 8px;
+    color: #12344D;
+    opacity: 0.6;
+`
+
+const Field = styled.div`	
+    color: #12344D;	
+    font-size: 13px;	
+    line-height: 20px;
+`
+
+const SubField = styled.div`
+    color: #12344D;	
+    font-size: 13px;
+    font-weight: 600;	
+    line-height: 20px;
+`
+
 const Overlay = styled.div`
     margin: 8px;
     width: calc(100vw - 18px);
@@ -303,8 +373,12 @@ const AssetName = styled.div`
     background: #F5f7f9;
 `
 
-const AssetDetail = styled.div`
-
+const AssetTitle = styled.div`
+    font-size: 18px;	
+    font-weight: bold;	
+    line-height: 21px;
+    color: #12344D;
+    padding-top: 20px;
 `
 
 const AssetTypes = styled.div`
