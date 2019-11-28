@@ -5,18 +5,27 @@ import Builder from './Builder';
 import $ from 'jquery';
 
 class App extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      context : {},
+      client: {},
+      clientLoaded: false
+    }
+  }
   componentDidMount(){
-    
     document.addEventListener('DOMContentLoaded',this.initialiseApp);
     
   }
   initialiseApp = () => {
     console.log('componentLoaded',window.app)
     window.app.initialized()
-        .then(function(_client) {
+        .then((_client) => {
           let client = _client;
+          this.setState({client: client});
           client.instance.context()
-            .then(function(context){
+            .then((context) => {
+              this.setState({context: context, clientLoaded: true})
               console.log(context)
             }).catch(function(error) {
               console.log(error)
@@ -24,7 +33,14 @@ class App extends React.Component{
         })
   }
   render(){
-    return <Builder/>
+    const {context, client, clientLoaded} = this.state;
+    const params = {
+      context,
+      client
+    }
+    if(clientLoaded)
+      return <Builder params={params}/>
+    else return ''
   }
 }
 
