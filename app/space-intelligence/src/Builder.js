@@ -28,6 +28,25 @@ class Builder extends Component {
             showAllTickets: false,
             allowEdit: false
         }
+        
+        this.styleMap = {
+            "low": {
+                "backgroundColor": "#1CB697",
+                "boxShadow": "0 2px 4px 0 #00B797, 0 2px 10px 0 #00B897"
+            },
+            "medium": {
+                "backgroundColor": "#459FFC",
+                "boxShadow": "0 2px 4px 0 #459FFC, 0 2px 10px 0 #459FFC"
+            },
+            "high":{
+                "backgroundColor": "#F69A3C",
+                "boxShadow": "0 2px 4px 0 #F89B2D, 0 2px 10px 0 #F89B2D"
+            },
+            "urgent":{
+                "backgroundColor": "#FF5959",
+                "boxShadow": "0 2px 4px 0 #FF5959, 0 2px 10px 0 #FF5959"
+            }
+        }
     }
 
     componentDidMount() {        
@@ -122,8 +141,33 @@ class Builder extends Component {
     }
 
     renderBlocks = () => {
+        const {context} = this.props.params;
+        const { selectedBlock, blocks, allTickets } = this.state;
+        
+        let hawkEyeMode = context.data.page === "hawk_eye";
+        let modifiedBlocks = blocks;
+        let style = {}
         return (
-            this.state.blocks.map((item, idx) => {
+            modifiedBlocks.map((item, idx) => {
+                let itemColor = item.color;
+                let currentAssetTicket = {};
+                if (hawkEyeMode && allTickets.length) {
+                    currentAssetTicket = allTickets.find(el => {
+                        for(var prop in el.asset){
+                            if(el.asset[prop].id === item.associations.display_id) return true
+                        }
+                })
+                if(currentAssetTicket && Object.keys(currentAssetTicket).length){
+                    itemColor = this.styleMap[currentAssetTicket.ticket.priority_name.toLowerCase()];
+                }    
+                }
+                if(typeof item.color === "string" && item.color.length){
+                    itemColor = item.color;
+                }
+                else{
+                    style = itemColor ? itemColor : {};
+                    itemColor = ""
+                }
                 return (
                     // <Tooltip
                     //     position="bottom"
@@ -138,7 +182,7 @@ class Builder extends Component {
                     //     hideDelay={200}
                     //     title="Space troopers"
                     // >
-                    <Block item={item} isSelected={idx == this.state.selectedBlock} color={item.color} onClick={() => {
+                    <Block item={item} style={style} isSelected={idx == this.state.selectedBlock} color={itemColor} onClick={() => {
                         this.setState({ selectedBlock: idx })
                         this.viewAssetDetails(idx);
                     }}></Block>
