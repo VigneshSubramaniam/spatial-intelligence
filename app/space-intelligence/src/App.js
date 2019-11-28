@@ -11,10 +11,20 @@ class App extends React.Component{
     
   }
   initialiseApp = () => {
-    console.log('loaded',window.app)
+    console.log('componentLoaded',window.app)
+    window.app.initialized()
+        .then(function(_client) {
+          let client = _client;
+          client.instance.context()
+            .then(function(context){
+              console.log(context)
+            }).catch(function(error) {
+              console.log(error)
+            });
+        })
   }
   render(){
-    return <div></div>
+    return <div>This s Modal Popup</div>
   }
 }
 
