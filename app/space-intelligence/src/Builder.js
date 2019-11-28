@@ -79,7 +79,8 @@ class Builder extends Component {
             selectedBlock: null,
             showAssetDetails: false,
             allAssets:[],
-            showAllAssets: false
+            showAllAssets: false,
+
         })
     }
 
@@ -157,39 +158,37 @@ class Builder extends Component {
             }
         }
         console.log(map);
-        client.db.set("asset_mappings", map).then(function (data) {
-            console.log('on save', data);
-        })
-        
-        // client.db.get( "asset_mappings").then(function(data){
-        //     console.log(data);
-        //     let map = filteredBlocks[0];
-        //     var allMappings = {
-        //         0: {
-        //             ...data['0'],
-        //             map
-        //         }
-        //     }
-        //     client.db.set( "asset_mappings", allMappings).then(function(data){
-        //         console.log(data);
-        //     })
-        // })
+        if(Object.keys(map).length){
+            client.db.set("asset_mappings", map).then(function (data) {
+                console.log('on save', data);
+            })
+        }
+        else{
+            client.db.delete("asset_mappings").then(function (data) {
+                console.log('on save', data);
+            })
+        }
+    
        
     }
 
     showAssetDetails = () => {
-        const {selectedBlock, blocks} = this.state
-        return(
-            <Overlay>
-                <AssetDetail>{blocks[selectedBlock].associations.name}</AssetDetail>
-            </Overlay>
-        )
+        const {selectedBlock, blocks, showAssetDetails} = this.state
+        if(showAssetDetails && blocks[selectedBlock] && blocks[selectedBlock].associations){
+            return(
+                <Overlay>
+                    <AssetDetail>{blocks[selectedBlock].associations.name}</AssetDetail>
+                </Overlay>
+            )
+        }
+        else return ''
+        
     }
 
     mapAssetDetails = () => {
         const { client } = this.props.params;
         
-        client.request.get("https://space.freshservice.com/api/v2/assets", {
+        client.request.get("https://space.freshservice.com/api/assets", {
             headers: {
                 Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
                 "Content-Type": "application/json;charset=utf-8"
