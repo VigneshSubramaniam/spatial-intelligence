@@ -4,8 +4,9 @@ import styled from 'styled-components'
 import ReactCrop, { makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import './Builder.css';
-import { cloneDeep } from 'lodash'
+import { cloneDeep, isEqual } from 'lodash'
 import {Tooltip} from 'react-tippy'
+import { isDeepStrictEqual } from 'util';
 
 
 class Builder extends Component {
@@ -23,6 +24,8 @@ class Builder extends Component {
             showAllAssets: false,
             showAssetDetails: false,
             allAssets:[],
+            allTickets: [],
+            showAllTickets: false,
             allowEdit: false
         }
     }
@@ -31,7 +34,8 @@ class Builder extends Component {
         const {context, client} = this.props.params;
         if(client && client.db){
             client.db.get('asset_mappings').then(function(data){
-                if(data && context.data.page == "asset"){
+                if(data && context.data.page == "hawk_eye"){
+                    this.getAllTickets()
                     let allBlocks = [];
                     for(var prop in data){
                         allBlocks.push(data[prop])
@@ -53,19 +57,20 @@ class Builder extends Component {
     }
 
     handleKeyDown(e) {
-        switch (e.keyCode) {
-            case 13://enter
-                this.createBlock();
-                this.clearCroparea()
-                break;
-            case 8://delete
-                this.deleteBlock();
-                this.clearCroparea();
-                break;
-            case 27://esc
-                this.clearCroparea();
-                break;
+        const {context} = this.props.params;
+        if(context.data.page !== "hawk_eye") {
+            switch (e.keyCode) {
+                case 13://enter
+                    this.createBlock();
+                    break;
+                case 8://delete
+                     this.deleteBlock();
+                    break;
+                case 27://esc
+                    break;
+            }
         }
+        this.clearCroparea()
     }
 
     clearCroparea = () => {
@@ -80,6 +85,7 @@ class Builder extends Component {
             showAssetDetails: false,
             allAssets:[],
             showAllAssets: false,
+            showAllTickets: false
 
         })
     }
@@ -161,11 +167,29 @@ class Builder extends Component {
         if(Object.keys(map).length){
             client.db.set("asset_mappings", map).then(function (data) {
                 console.log('on save', data);
+                client.interface.trigger("showNotify", {
+                    type: "success",
+                    message: "Pulished successfully"
+                  /* The "message" should be plain text */
+                  }).then(function(data) {
+                  // data - success message
+                  }).catch(function(error) {
+                  // error - error object
+                  });
             })
         }
         else{
             client.db.delete("asset_mappings").then(function (data) {
                 console.log('on save', data);
+                client.interface.trigger("showNotify", {
+                    type: "success",
+                    message: "All asset mappings removed successfully"
+                  /* The "message" should be plain text */
+                  }).then(function(data) {
+                  // data - success message
+                  }).catch(function(error) {
+                  // error - error object
+                  });
             })
         }
     
@@ -203,6 +227,44 @@ class Builder extends Component {
         }
         else return ''
 
+    }
+
+    getAllTickets = () => {
+        const { client } = this.props.params;
+        
+        client.request.get("https://space.freshservice.com/helpdesk/tickets/filter/all_tickets?format=json&page=1", {
+            headers: {
+                Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
+                "Content-Type": "application/json;charset=utf-8"
+            }
+        })
+            .then(function (res) {
+                console.log("All Tickets");
+                let allTickets = JSON.parse(res.response);
+                let allTicketsWithAssets = [] 
+                let count = 0;
+                allTickets.forEach((ticket, i) => {
+                    count += 1;
+                    client.db.get(`ticket${ticket.display_id}`).then(function(data){
+                        // for(var prop in data){
+                        //     allTicketsWithAssets.push({ticket, asset: data[prop]})
+                        // }
+                        allTicketsWithAssets.push({ticket, asset: data});
+                        if(i == count-1) {
+                            this.setState({allTickets: allTicketsWithAssets, showAllTickets: true})
+                        }
+                    }.bind(this))
+                    .catch(function (error) {
+                        if(i == count-1) {
+                            allTicketsWithAssets.push({ticket, asset: {}});
+                            this.setState({allTickets: allTicketsWithAssets, showAllTickets: true})
+                        }
+                    }.bind(this));
+                })
+            }.bind(this))
+            .catch(function (error) {
+                console.error(error);
+            });
     }
 
     mapAssetDetails = () => {
@@ -244,6 +306,23 @@ class Builder extends Component {
         this.setState({showAssetDetails: true});
     }
 
+    showSelectedAsset =  (item) => {
+        const {selectedBlock, blocks} = this.state;
+        let modifiedBlocks = blocks.map(el => {
+            var arr = [];
+            for(var prop in item.asset) {
+                arr.push(item.asset[prop].id)
+            }
+            console.log(arr);
+            return{
+                ...el,
+                color: arr.indexOf(el.associations.display_id) > -1 ? "green" : ""
+            }
+        });
+        console.log(modifiedBlocks);
+        this.setState({blocks: modifiedBlocks});
+    }
+
     showAllAssets = () => {
         const {allAssets} = this.state;
         return(
@@ -267,8 +346,38 @@ class Builder extends Component {
         )
     }
 
+    showAllTickets = () => {
+        const {allTickets} = this.state;
+        console.log("showAllTickets", allTickets)
+        return(
+            <Overlay>
+                <AssetTypes noHover>
+                    <AssetName>Ticket Subject</AssetName>
+                    <AssetName>Requester</AssetName>
+                    <AssetName>Status</AssetName>
+                </AssetTypes>
+                {allTickets.map(item => {
+                    return(
+                        <AssetTypes onClick={() => {this.showSelectedAsset(item)}}>
+                            <Asset style={{textOverflow: "ellipsis",overflow: "hidden",whiteSpace: "nowrap"}} title={item.ticket.subject}>{item.ticket.subject}</Asset>
+                            <Asset>{item.ticket.requester_name}</Asset>
+                            <Asset>{item.ticket.status_name}</Asset>
+                        </AssetTypes>
+                    )
+                })}
+            </Overlay>
+        )
+    }
+
+    toogleTicketOverLay = () => {
+        const {showAllTickets} = this.state;
+        this.setState({showAllTickets: !showAllTickets});
+    }
+    
+
     render() {
-        const {showAssetDetails, showAllAssets, allowEdit} = this.state;
+        const {showAssetDetails, showAllAssets, allowEdit, showAllTickets} = this.state;
+        const {context} = this.props.params;
         return (
             <div>
                 <ReactCrop
@@ -282,7 +391,12 @@ class Builder extends Component {
                 </ReactCrop>
                 {showAssetDetails && this.showAssetDetails()}
                 {showAllAssets && this.showAllAssets()}
-                {allowEdit && <Button onClick={() => this.saveMappings()}>Publish</Button>}
+                {showAllTickets && this.showAllTickets()}
+                {context.data.page == "hawk_eye" ? 
+                    <Button onClick={() => this.toogleTicketOverLay()}>{showAllTickets ? "Hide" : "Show"}</Button>
+                    :
+                    allowEdit && <Button onClick={() => this.saveMappings()}>Publish</Button>
+                }
             </div>
         )
     }

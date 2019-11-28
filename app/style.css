@@ -69,3 +69,15 @@ p{
 .locate {
   margin-right: 6px;
 }
+
+.hawk_eye_body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#hawk_eye {
+  border: 1px solid;
+  padding: 8px;
+  border-radius: 4px;
+}
