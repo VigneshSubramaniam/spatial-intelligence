@@ -287,13 +287,13 @@ class Builder extends Component {
                         // }
                         allTicketsWithAssets.push({ticket, asset: data});
                         if(i == count-1) {
-                            this.setState({allTickets: allTicketsWithAssets, showAllTickets: true})
+                            this.setState({allTickets: allTicketsWithAssets})
                         }
                     }.bind(this))
                     .catch(function (error) {
                         if(i == count-1) {
                             allTicketsWithAssets.push({ticket, asset: {}});
-                            this.setState({allTickets: allTicketsWithAssets, showAllTickets: true})
+                            this.setState({allTickets: allTicketsWithAssets})
                         }
                     }.bind(this));
                 })
@@ -307,12 +307,12 @@ class Builder extends Component {
         const { client } = this.props.params;
         
         //client.request.get("https://space.freshservice.com/api/v2/assets", {
-        client.request.get("https://space.freshservice.com/cmdb/items.json", {
-            headers: {
-                Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
-                "Content-Type": "application/json;charset=utf-8"
-            }
-        })
+            client.request.get("https://space.freshservice.com/cmdb/items.json", {
+                headers: {
+                    Authorization: "Basic <%= encode('K4rl3U8d8fkWxlmnSPQI:X')%>",
+                    "Content-Type": "application/json;charset=utf-8"
+                }
+            })
             .then(function (res) {
                 this.setState({ allAssets: JSON.parse(res.response), showAllAssets: true })
             }.bind(this))
@@ -350,7 +350,7 @@ class Builder extends Component {
             }
             return{
                 ...el,
-                color: arr.indexOf(el.associations.display_id) > -1 ? "green" : ""
+                color: arr.indexOf(el.associations.display_id) > -1 ? "#12344D" : ""
             }
         });
         this.setState({blocks: modifiedBlocks});
@@ -405,6 +405,26 @@ class Builder extends Component {
         const {showAllTickets} = this.state;
         this.setState({showAllTickets: !showAllTickets});
     }
+
+    renderLegends = () => {
+        let keys = Object.keys(this.styleMap);
+        return(
+            <LegendWrapper>
+            {keys.map(item => {
+                return(
+                    <Legend className="flex">
+                        <Color style={this.styleMap[item]}></Color>
+                        <LegendLabel>{item}</LegendLabel>
+                    </Legend>
+                )
+            })}
+            <Legend className="flex">
+            <Color style={{backgroundColor: "#90C6FE"}}></Color>
+            <LegendLabel>not associated</LegendLabel>
+            </Legend>
+            </LegendWrapper>
+        )
+    }
     
 
     render() {
@@ -425,14 +445,39 @@ class Builder extends Component {
                 {showAllAssets && this.showAllAssets()}
                 {showAllTickets && this.showAllTickets()}
                 {context.data.page == "hawk_eye" ? 
-                    <Button onClick={() => this.toogleTicketOverLay()}>{showAllTickets ? "Hide" : "Show"}</Button>
+                    <Button secondary onClick={() => this.toogleTicketOverLay()}>{showAllTickets ? "Hide list" : "Show list"}</Button>
                     :
                     allowEdit && <Button onClick={() => this.saveMappings()}>Publish</Button>
                 }
+                {context.data.page == "hawk_eye" && this.renderLegends()}
             </div>
         )
     }
 }
+
+const Legend = styled.div`
+    line-height: 20px;
+    align-items: center;
+    margin-top: 2px;
+`
+
+const LegendLabel = styled.div`
+
+`
+
+const LegendWrapper = styled.div`
+    position: absolute;
+    top: 60px;
+    right: 36px;
+    font-size: 14px;
+    color: #12344D;
+`
+
+const Color = styled.div`
+    margin-right: 10px;
+    height: 12px;
+    width: 12px;
+`
 
 const OverlayAssetDetail = styled.div`
     margin: 8px;
@@ -560,12 +605,12 @@ const Button = styled.button`
     border-radius: 4px;
     border: 1px solid #dadfe3;
     box-shadow: 0 2px 4px 0 rgba(18,52,77,0.06), 0 2px 18px 0 rgba(18,52,77,0.16);
-    background-color: #009A79;
+    background-color: ${props => props.secondary ? "#F3F5F7" : "#009A79"};
     cursor:pointer;
-    color: #FFF;
+    color: ${props => props.secondary ? "#12344D" : "#FFF"};
     font-weight: 600;
     &:hover{
-        border: 1px solid green;
+        border: ${props => props.secondary ? "1px solid #dadfe3" : "1px solid green"};
     }
     &:focus{
         outline: none;
