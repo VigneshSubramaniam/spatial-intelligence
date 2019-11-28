@@ -114,6 +114,7 @@ class Builder extends Component {
     }
 
     onCropChange = crop => {
+        crop.y = document.getElementsByClassName('ReactCrop')[0].scrollTop + crop.y;
         if(this.state.allowEdit){
             this.setState({ crop })
         }
@@ -430,7 +431,7 @@ class Builder extends Component {
         const {showAssetDetails, showAllAssets, allowEdit, showAllTickets} = this.state;
         const {context} = this.props.params;
         return (
-            <div>
+            <Section>
                 <ReactCrop
                     src={map}
                     crop={this.state.crop}
@@ -449,10 +450,16 @@ class Builder extends Component {
                     allowEdit && <Button onClick={() => this.saveMappings()}>Publish</Button>
                 }
                 {context.data.page == "hawk_eye" && this.renderLegends()}
-            </div>
+            </Section>
         )
     }
 }
+
+const Section = styled.div`
+    .ReactCrop__image {
+        height: auto !important;
+    }
+`;
 
 const Legend = styled.div`
     line-height: 20px;
