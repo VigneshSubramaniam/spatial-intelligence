@@ -1,6 +1,7 @@
 .ReactCrop__image{
+    position:absolute;
     width: 100vw;
-    /* height: 100vh; */
+    height: 100vh;
 }
 
 .ReactCrop{
@@ -9,4 +10,22 @@
     height: 100vh;
     overflow: scroll;
     left: 0;
+}
+
+.pos-rel{
+    position: relative;
+    height:auto;
+}
+
+.table-tooltip{
+    background: #FFF;
+    box-shadow: 0 2px 4px 0 rgba(18,52,77,0.06), 0 2px 18px 0 rgba(18,52,77,0.16);
+}
+
+.tippy-tooltip{
+  background: #FFF;
+  box-shadow: 0 2px 4px 0 rgba(18,52,77,0.06), 0 2px 18px 0 rgba(18,52,77,0.16);
+  color: black;
+  text-align: left;
+  padding: 12px;
 }

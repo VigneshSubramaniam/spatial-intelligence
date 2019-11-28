@@ -105,8 +105,9 @@ class Builder extends Component {
                     onImageLoaded={this.onImageLoaded}
                     onComplete={this.onCropComplete}
                     onChange={this.onCropChange}
-                />
+                >
                 {this.renderBlocks()}
+                </ReactCrop>
             </div>
         )
     }
@@ -121,7 +122,7 @@ const Block = styled.div`
     position: absolute;
     transform: ${props => `translate3d(${props.item.x}px,${props.item.y}px,0)`};
     background-color: blue;
-    border-radius: 4px;
+    border-radius: 2px;
     border: ${props => props.isSelected ? "1px solid red" : "1px solid transparent"};
     width: ${props => props.item.width}px;
     height: ${props => props.item.height}px;
