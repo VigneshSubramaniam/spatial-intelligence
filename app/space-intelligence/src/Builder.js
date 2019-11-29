@@ -418,10 +418,6 @@ class Builder extends Component {
                     </Legend>
                 )
             })}
-            <Legend className="flex">
-            <Color style={{backgroundColor: "#90C6FE"}}></Color>
-            <LegendLabel>not associated</LegendLabel>
-            </Legend>
             </LegendWrapper>
         )
     }
@@ -474,7 +470,7 @@ const LegendLabel = styled.div`
 const LegendWrapper = styled.div`
     position: absolute;
     top: 60px;
-    right: 36px;
+    right: 24px;
     font-size: 14px;
     color: #12344D;
 `
